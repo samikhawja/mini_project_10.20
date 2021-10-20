@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { clog } = require('./middleware/clog');
 const api = require('./routes/index.js');
+const { readFromFile, writeToFile, readAndAppend } = require('./helpers/fsUtils');
 
 const PORT = process.env.port || 3001;
 
@@ -26,6 +27,17 @@ app.get('/', (req, res) =>
 app.get('/feedback', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/pages/feedback.html'))
 );
+
+// POST Route for diagnostics
+app.post('/api/diagnostics', (req, res) => {
+  readAndAppend(req.body, path.join(__dirname, '/db/diagnostics.json'));
+  res.json({ status: "success" });
+});
+
+app.get('/api/diagnostics', (req, res) => {
+  readFromFile(path.join(__dirname, '/db/diagnostics.json'))
+  .then(data => res.json(JSON.parse(data)));
+})
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
