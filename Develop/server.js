@@ -18,6 +18,10 @@ app.use('/api', api);
 
 app.use(express.static('public'));
 
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, '/public/404.html'));
+})
+
 // GET Route for homepage
 app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/index.html'))
